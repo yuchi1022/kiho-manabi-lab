@@ -1,4 +1,4 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#263e73"><title>希帆のまなびラボ</title><style>:root{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN',sans-serif;color:#213047;background:#f4f7fc}*{box-sizing:border-box}body{margin:0}main{max-width:620px;margin:auto;padding:18px 16px 70px}header{background:#263e73;color:white;padding:25px 20px 20px;border-radius:0 0 25px 25px}header small{opacity:.85}.tabs{display:flex;gap:8px;margin:15px 0}.tabs button{flex:1}.card{background:white;border-radius:18px;padding:18px;margin:13px 0;box-shadow:0 3px 15px #263e7310}.muted{color:#66758c;font-size:13px}.big{font-size:22px;font-weight:750;line-height:1.65;white-space:pre-line}.btn{border:0;border-radius:13px;padding:13px 16px;background:#e7ecf6;color:#263e73;font-weight:700;font-size:16px;cursor:pointer;min-height:48px}.primary{background:#315cba;color:white}.option{width:100%;display:block;text-align:left;margin:9px 0;background:#f4f7fc}.selected{outline:3px solid #315cba}button:disabled{opacity:.55}textarea,input,select{font:inherit;width:100%;border:1px solid #c8d1e0;border-radius:12px;padding:12px;background:white;color:#213047}textarea{min-height:110px}label{display:block;font-size:13px;font-weight:700;margin:12px 0 5px}.hide{display:none!important}.pill{display:inline-block;border-radius:30px;background:#eaf1ff;padding:6px 12px;font-size:13px}.flex{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#f1f5fc;border-radius:12px;padding:12px}.metric b{display:block;font-size:22px;margin-top:4px}.bar{height:9px;background:#e6ebf4;border-radius:10px;overflow:hidden}.bar>i{display:block;height:100%;background:#315cba}.feedback{background:#eef5ff;padding:14px;border-radius:12px;white-space:pre-line;line-height:1.7}.small{font-size:13px}.line{border-top:1px solid #e2e8f1;margin:15px 0}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:9px 4px;border-bottom:1px solid #e5eaf1;text-align:center}th:first-child,td:first-child{text-align:left}svg{width:100%;height:auto}.warning{background:#fff5e5;border-radius:12px;padding:12px;font-size:13px;line-height:1.7}footer{color:#77849a;text-align:center;font-size:12px;margin:30px 0}</style></head><body><header><small>小学１年生 · じぶんで考える</small><h1 style="margin:6px 0">希帆のまなびラボ 🌱</h1><small>できた！より、どう考えた？</small></header><main><div class="tabs"><button class="btn primary" id="kidtab">こども</button><button class="btn" id="parenttab">保護者</button></div><section id="kid"><div id="home"><div class="card"><p id="aiStatus" class="muted"></p><div class="muted">きょうの 10ぷんチャレンジ</div><h2>なにを れんしゅうする？</h2><div class="split"><button class="btn primary" onclick="start('math')">🧩<br>さんすう</button><button class="btn primary" onclick="start('reading')">📖<br>こくご</button></div><p class="muted">ひらくたびに あたらしい ３もん。ヒントを みても いいよ。</p></div></div><div id="quiz" class="hide"><div class="card"><div class="flex" style="justify-content:space-between"><span class="pill" id="topic"></span><span id="counter" class="muted"></span></div><div class="bar" style="margin:15px 0"><i id="progress" style="width:0"></i></div><div class="big" id="prompt"></div><div id="visualArea"></div><div id="choices" style="margin-top:18px"></div><div id="answerArea" class="hide"><label>じぶんの こたえ</label><textarea id="freeAnswer" placeholder="みじかく かいても いいよ"></textarea></div><div id="hintBox" class="feedback hide" style="margin-top:12px"></div><div id="feedback" class="feedback hide" style="margin-top:12px"></div><div class="flex" style="margin-top:16px"><button class="btn" id="hintBtn" onclick="hint()">💡 ヒント</button><button class="btn primary hide" id="submitBtn" onclick="submitReading()">こたえを みる</button><button class="btn primary hide" id="nextBtn" onclick="next()">つぎへ →</button></div></div></div><div id="complete" class="card hide"><h2>🌟 おつかれさま！</h2><p id="completeText"></p><button class="btn primary" onclick="goHome()">ホームにもどる</button></div></section><section id="parent" class="hide"><div class="card"><h3>AI 出題設定（保護者）</h3><label>AI 接続パスワード（Cloudflare の LAB_ACCESS_TOKEN）</label><input id="labToken" type="password" autocomplete="off" placeholder="Cloudflare に保存したパスワード"><label style="font-weight:400"><input type="checkbox" id="rememberToken" style="width:auto;margin-right:7px">この端末に保存する（共有端末ではオフ）</label><p class="muted">保存しない場合はこのタブ内だけ有効です。パスワードは GitHub や HTML には書き込みません。</p><button class="btn primary" onclick="setLabToken()">AI を有効にする</button> <button class="btn" onclick="clearLabToken()">パスワードを消す</button><p id="tokenStatus" class="muted"></p></div><div class="card"><h2>保護者 Dashboard</h2><div class="split"><div class="metric"><span class="muted">累積練習題數</span><b id="attemptCount">0</b></div><div class="metric"><span class="muted">提示使用率</span><b id="hintRate">—</b></div></div><div class="metric" style="margin-top:10px"><span class="muted">自行訂正成功率</span><b id="correctionRate">—</b></div><h3>能力別の練習結果</h3><div id="skills"></div><p class="muted">國語自由記述由家長確認，不以關鍵字自動判分。</p></div><div class="card"><h3>早稲アカ成績推移</h3><div id="chart"></div><div style="overflow:auto"><table id="examTable"></table></div><p class="muted">偏差值。Jump Test 與 Challenge Test 的受測群體可能不同，請避免直接視為同一測驗的連續變化。</p></div><div class="card"><h3>新考試成績を追加</h3><p class="muted">請先在 ChatGPT 上傳 PDF，請我輸出符合本工具格式的更新 JSON，再將 JSON 匯入此處。此離線版本不能直接解析考試 PDF。</p><label>更新 JSON 檔案</label><input type="file" id="importFile" accept=".json,application/json"><div class="flex" style="margin-top:12px"><button class="btn primary" onclick="importJSON()">匯入更新</button><button class="btn" onclick="exportJSON()">匯出完整備份</button></div><div id="importStatus" class="muted" style="margin-top:8px"></div></div><div class="card"><h3>資料保存與移轉</h3><div class="warning">此版本將紀錄儲存在目前瀏覽器的 localStorage。清除網站資料、換手機或改用其他瀏覽器時，紀錄可能消失。請定期匯出 JSON 備份。單獨開啟 HTML 檔案時，iPhone 的儲存行為也可能不穩定。</div><div class="flex" style="margin-top:12px"><button class="btn" onclick="exportJSON()">下載備份 JSON</button><button class="btn" onclick="resetAttempts()">清除練習紀錄</button></div></div></section><footer>希帆のまなびラボ · v2.0 · 学習記録は端末内に保存</footer></main><script>
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#263e73"><title>希帆のまなびラボ</title><style>:root{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN',sans-serif;color:#213047;background:#f4f7fc}*{box-sizing:border-box}body{margin:0}main{max-width:620px;margin:auto;padding:18px 16px 70px}header{background:#263e73;color:white;padding:25px 20px 20px;border-radius:0 0 25px 25px}header small{opacity:.85}.tabs{display:flex;gap:8px;margin:15px 0}.tabs button{flex:1}.card{background:white;border-radius:18px;padding:18px;margin:13px 0;box-shadow:0 3px 15px #263e7310}.muted{color:#66758c;font-size:13px}.big{font-size:22px;font-weight:750;line-height:1.65;white-space:pre-line}.btn{border:0;border-radius:13px;padding:13px 16px;background:#e7ecf6;color:#263e73;font-weight:700;font-size:16px;cursor:pointer;min-height:48px}.primary{background:#315cba;color:white}.option{width:100%;display:block;text-align:left;margin:9px 0;background:#f4f7fc}.selected{outline:3px solid #315cba}button:disabled{opacity:.55}textarea,input,select{font:inherit;width:100%;border:1px solid #c8d1e0;border-radius:12px;padding:12px;background:white;color:#213047}textarea{min-height:110px}label{display:block;font-size:13px;font-weight:700;margin:12px 0 5px}.hide{display:none!important}.pill{display:inline-block;border-radius:30px;background:#eaf1ff;padding:6px 12px;font-size:13px}.flex{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#f1f5fc;border-radius:12px;padding:12px}.metric b{display:block;font-size:22px;margin-top:4px}.bar{height:9px;background:#e6ebf4;border-radius:10px;overflow:hidden}.bar>i{display:block;height:100%;background:#315cba}.feedback{background:#eef5ff;padding:14px;border-radius:12px;white-space:pre-line;line-height:1.7}.small{font-size:13px}.line{border-top:1px solid #e2e8f1;margin:15px 0}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:9px 4px;border-bottom:1px solid #e5eaf1;text-align:center}th:first-child,td:first-child{text-align:left}svg{width:100%;height:auto}.warning{background:#fff5e5;border-radius:12px;padding:12px;font-size:13px;line-height:1.7}footer{color:#77849a;text-align:center;font-size:12px;margin:30px 0}</style></head><body><header><small>小学１年生 · じぶんで考える</small><h1 style="margin:6px 0">希帆のまなびラボ 🌱</h1><small>できた！より、どう考えた？</small></header><main><div class="tabs"><button class="btn primary" id="kidtab">こども</button><button class="btn" id="parenttab">保護者</button></div><section id="kid"><div id="home"><div class="card"><p id="aiStatus" class="muted"></p><div class="muted">きょうの 10ぷんチャレンジ</div><h2>なにを れんしゅうする？</h2><div class="split"><button class="btn primary" onclick="start('math')">🧩<br>さんすう</button><button class="btn primary" onclick="start('reading')">📖<br>こくご</button></div><p class="muted">ひらくたびに あたらしい ３もん。ヒントを みても いいよ。</p></div></div><div id="quiz" class="hide"><div class="card"><div class="flex" style="justify-content:space-between"><span class="pill" id="topic"></span><span id="counter" class="muted"></span></div><div class="bar" style="margin:15px 0"><i id="progress" style="width:0"></i></div><div class="big" id="prompt"></div><div id="visualArea"></div><div id="choices" style="margin-top:18px"></div><div id="answerArea" class="hide"><label>じぶんの こたえ</label><textarea id="freeAnswer" placeholder="みじかく かいても いいよ"></textarea></div><div id="hintBox" class="feedback hide" style="margin-top:12px"></div><div id="feedback" class="feedback hide" style="margin-top:12px"></div><div class="flex" style="margin-top:16px"><button class="btn" id="hintBtn" onclick="hint()">💡 ヒント</button><button class="btn primary hide" id="submitBtn" onclick="submitReading()">こたえを みる</button><button class="btn primary hide" id="nextBtn" onclick="next()">つぎへ →</button></div></div></div><div id="complete" class="card hide"><h2>🌟 おつかれさま！</h2><p id="completeText"></p><button class="btn primary" onclick="goHome()">ホームにもどる</button></div></section><section id="parent" class="hide"><div class="card"><h3>AI 出題設定（保護者）</h3><label>AI 接続パスワード（Cloudflare の LAB_ACCESS_TOKEN）</label><input id="labToken" type="password" autocomplete="off" placeholder="Cloudflare に保存したパスワード"><label style="font-weight:400"><input type="checkbox" id="rememberToken" style="width:auto;margin-right:7px">この端末に保存する（共有端末ではオフ）</label><p class="muted">保存しない場合はこのタブ内だけ有効です。パスワードは GitHub や HTML には書き込みません。</p><button class="btn primary" onclick="setLabToken()">AI を有効にする</button> <button class="btn" onclick="clearLabToken()">パスワードを消す</button><p id="tokenStatus" class="muted"></p></div><div class="card"><h2>保護者 Dashboard</h2><div class="split"><div class="metric"><span class="muted">累積練習題數</span><b id="attemptCount">0</b></div><div class="metric"><span class="muted">提示使用率</span><b id="hintRate">—</b></div></div><div class="metric" style="margin-top:10px"><span class="muted">自行訂正成功率</span><b id="correctionRate">—</b></div><h3>能力別の練習結果</h3><div id="skills"></div><p class="muted">國語自由記述由家長確認，不以關鍵字自動判分。</p></div><div class="card"><h3>早稲アカ成績推移</h3><div id="chart"></div><div style="overflow:auto"><table id="examTable"></table></div><p class="muted">偏差值。Jump Test 與 Challenge Test 的受測群體可能不同，請避免直接視為同一測驗的連續變化。</p></div><div class="card"><h3>新考試成績を追加</h3><p class="muted">請先在 ChatGPT 上傳 PDF，請我輸出符合本工具格式的更新 JSON，再將 JSON 匯入此處。此離線版本不能直接解析考試 PDF。</p><label>更新 JSON 檔案</label><input type="file" id="importFile" accept=".json,application/json"><div class="flex" style="margin-top:12px"><button class="btn primary" onclick="importJSON()">匯入更新</button><button class="btn" onclick="exportJSON()">匯出完整備份</button></div><div id="importStatus" class="muted" style="margin-top:8px"></div></div><div class="card"><h3>資料保存與移轉</h3><div class="warning">此版本將紀錄儲存在目前瀏覽器的 localStorage。清除網站資料、換手機或改用其他瀏覽器時，紀錄可能消失。請定期匯出 JSON 備份。單獨開啟 HTML 檔案時，iPhone 的儲存行為也可能不穩定。</div><div class="flex" style="margin-top:12px"><button class="btn" onclick="exportJSON()">下載備份 JSON</button><button class="btn" onclick="resetAttempts()">清除練習紀錄</button></div></div></section><footer>希帆のまなびラボ · v2.1 · 学習記録は端末内に保存</footer></main><script>
 
 function visualNode(v){
  if(!v||typeof v!=='object')return null;
@@ -33,7 +33,7 @@ function setLabToken(){
  const token=$('labToken').value.trim();if(!token){$('tokenStatus').textContent='パスワードを入力してください。';return}
  labToken=token;$('labToken').value='';
  try{if($('rememberToken').checked){localStorage.setItem('manabi-ai-access-token',token);sessionStorage.removeItem('manabi-ai-access-token')}else{sessionStorage.setItem('manabi-ai-access-token',token);localStorage.removeItem('manabi-ai-access-token')}}catch(e){}
- $('tokenStatus').textContent='AI を有効にしました。さんすう／こくごを選ぶと新しい問題を作ります。';
+ $('tokenStatus').textContent='AI を有効にしました。こくごは AI、さんすうは計算で検証した問題を作ります。';
 }
 function clearLabToken(){labToken='';try{localStorage.removeItem('manabi-ai-access-token');sessionStorage.removeItem('manabi-ai-access-token')}catch(e){}$('tokenStatus').textContent='パスワードを消しました。'}
 
@@ -47,39 +47,55 @@ const IS_MEI=false;
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const rand=(lo,hi)=>lo+Math.floor(Math.random()*(hi-lo+1));
 const shuffle=a=>{let b=[...a];for(let i=b.length-1;i>0;i--){let j=rand(0,i);[b[i],b[j]]=[b[j],b[i]]}return b};
-function choiceQ(skill,q,answer,wrong,hint,explain){
+function choiceQ(skill,q,answer,wrong,hint,explain,visual=null){
  let opts=shuffle([...new Set([String(answer),...wrong.map(String)])]);
  if(opts.length!==3||!opts.includes(String(answer)))throw Error('invalid choices');
- return {skill,q,options:opts,correct:opts.indexOf(String(answer)),hint,explain};
+ return {skill,q,options:opts,correct:opts.indexOf(String(answer)),hint,explain,visual};
 }
 function makeMath(skill){
- let a,b,c,n,ans,kind=rand(0,2);
+ let a,b,c,ans,n,visual=null,q='',hint='',explain='',wrong=[],unit='';
  if(skill==='時計'){
-  let hour=rand(1,10),minute=pick([0,15,30,45]),add=pick([15,30,60]);
-  let total=hour*60+minute+add, h=Math.floor(total/60),m=total%60;
-  let fmt=(x,y)=>x+'じ'+(y?y+'ふん':'');
-  let correct=fmt(h,m),wrong=[fmt(hour,minute),fmt(h+(h<12?1:-1),m)];
-  if(new Set([correct,...wrong]).size<3)wrong=[fmt(hour,minute),fmt(h,m===0?30:0)];
-  return choiceQ(skill,fmt(hour,minute)+'の '+add+'ふん あとは なんじ？',correct,wrong,'とけいの はりを すこしずつ すすめよう。',fmt(hour,minute)+' → '+correct+'。');
+  const hour=rand(1,11),minute=pick([0,15,30,45]);
+  const fmt=(h,m)=>h+'じ'+(m===0?'':m+'ふん');
+  ans=fmt(hour,minute);unit='';
+  const times=[[(hour%12)+1,minute],[hour,(minute+15)%60],[hour,minute===0?30:0],[(hour+10)%12+1,minute]];
+  wrong=[...new Set(times.map(t=>fmt(t[0],t[1])).filter(t=>t!==ans))].slice(0,2);
+  visual={type:'clock',hour,minute};q='この とけいは なんじ なんぷん ですか。';
+  hint='みじかい はりと ながい はりを みよう。';explain='この とけいは '+ans+' です。';
+  return choiceQ(skill,q,ans,wrong,hint,explain,visual);
  }
  if(skill==='文章題'){
-  a=rand(9,18);b=rand(2,Math.min(7,a-2));c=rand(2,6);ans=a-b+c;
-  return choiceQ(skill,'シールが '+a+'まい あります。'+b+'まい あげて、'+c+'まい もらいました。いま なんまい？',ans+'まい',[a+b+c+'まい',a-b+'まい'],'あげたら へる、もらったら ふえるよ。',a+'−'+b+'＋'+c+'＝'+ans+'まい。');
+  a=rand(6,14);b=rand(1,a-2);c=rand(1,5);ans=a-b+c;unit='こ';
+  const item=pick(['りんご','みかん','あめ','シール']);
+  q=item+'が '+a+'こ あります。'+b+'こ つかって、'+c+'こ もらいました。いま なんこ ありますか。';
+  wrong=[a+b+c,a-b];hint='つかったら へる、もらったら ふえるよ。';
+  explain=a+'−'+b+'＋'+c+'＝'+ans+'こ。';
+ }else if(skill==='条件整理'||skill==='順序・条件'){
+  const names=shuffle(['あか','あお','きいろ','みどり','しろ']).slice(0,3);
+  q=names[0]+'は '+names[1]+'より まえ。\n'+names[1]+'は '+names[2]+'より まえ。\nいちばん うしろは だれ？';
+  hint='じゅんばんに ならべてみよう。';explain=names.join(' → ')+' の じゅんばん。';
+  return choiceQ(skill,q,names[2],[names[0],names[1]],hint,explain);
+ }else if(skill==='図形'){
+  n=rand(3,9);ans=n;unit='こ';const shape=pick(['triangle','square','circle']);
+  visual={type:'shapes',shape,count:n};q='この ずけいは ぜんぶで なんこ ありますか。';
+  wrong=[n-1,n+1];hint='ひとつずつ ゆびで かぞえよう。';explain=n+'こ あります。';
+ }else if(skill==='複数ステップ'){
+  a=rand(3,10);b=rand(2,7);c=rand(2,6);ans=a+c;
+  q='□ ＋ '+b+' ＝ '+(a+b)+'\n□ より '+c+' おおきい かずは？';
+  wrong=[a,ans+c];hint='まず □ の かずを だそう。';explain='□＝'+a+'。'+a+'＋'+c+'＝'+ans+'。';
+ }else{
+  a=rand(3,9);b=rand(2,8);ans=a;
+  q=a+'＋'+b+'＝'+(a+b)+'。\nでは '+(a+b)+'−'+b+' は？';
+  wrong=[ans-1,ans+1];hint='たしざんを ひきざんで たしかめよう。';explain=(a+b)+'−'+b+'＝'+ans+'。';skill='みなおし';
  }
- if(skill==='条件整理'||skill==='順序・条件'){
-  let names=shuffle(['あか','あお','きいろ','みどり','しろ']).slice(0,3);
-  return choiceQ(skill,names[0]+'は '+names[1]+'より まえ。\n'+names[1]+'は '+names[2]+'より まえ。\nいちばん うしろは だれ？',names[2],[names[0],names[1]],'「まえ」を じゅんばんに ならべてみよう。',names.join(' → ')+' の じゅんばん。');
+ const answer=String(ans)+unit;
+ const options=wrong.map(x=>String(x)+unit);
+ // The correct answer is calculated first; distractors are distinct and cannot match it.
+ let delta=2;
+ while(new Set([answer,...options]).size<3){
+  for(let i=0;i<options.length;i++)if(options[i]===answer||options.indexOf(options[i])!==i){options[i]=String(Number(ans)+delta++)+unit}
  }
- if(skill==='図形'){
-  n=rand(2,6);a=n*2;
-  return choiceQ(skill,'おなじ しかくい タイルが '+a+'まい。２まいずつ つかうと、なんこ つくれる？',n+'こ',[(n+1)+'こ',(n-1)+'こ'],'２まいずつ くみに しよう。',a+'まいを ２まいずつに わけると '+n+'こ。');
- }
- if(skill==='複数ステップ'){
-  a=rand(4,12);b=rand(2,7);c=rand(2,5);ans=a+c;
-  return choiceQ(skill,'□ ＋ '+b+' ＝ '+(a+b)+'\n□ より '+c+' おおきい かずは？',ans,[a,ans+c],'まず □ の かずを だそう。','□＝'+a+'。'+a+'＋'+c+'＝'+ans+'。');
- }
- a=rand(4,9);b=rand(3,9);ans=a;
- return choiceQ('みなおし',a+' ＋ '+b+' ＝ '+(a+b)+'。\nでは '+(a+b)+' − '+b+' は？',ans,[ans+1,ans-1],'たしざんを ひきざんで たしかめよう。',(a+b)+'−'+b+'＝'+a+'。');
+ return choiceQ(skill,q,answer,options,hint,explain,visual);
 }
 const stories=[
  (n)=>({skill:'心情理解',q:n+'は こうえんへ いくのを たのしみに していました。ところが、あめが ふってきました。'+n+'は ためいきを つきました。\n\nどうして ためいきを つきましたか。',model:'あめで こうえんに いけなくなりそうで、ざんねんだったから。',hint:'たのしみに していたことは なにかな？',explain:'できごとと きもちを つなげよう。'}),
@@ -111,7 +127,7 @@ async function start(m){
  if(generating)return;generating=true;mode=m;idx=0;queue=generateQuestions(m);
  $('home').classList.add('hide');$('complete').classList.add('hide');$('quiz').classList.remove('hide');
  $('topic').textContent=m==='math'?'さんすう':'こくご';$('counter').textContent='';$('prompt').textContent='';$('choices').replaceChildren();$('visualArea').replaceChildren();$('feedback').classList.add('hide');$('hintBox').classList.add('hide');$('nextBtn').classList.add('hide');$('hintBtn').classList.add('hide');$('submitBtn').classList.add('hide');$('answerArea').classList.add('hide');
- if(labToken){
+ if(labToken && m==='reading'){
   $('aiStatus').textContent='AI が あたらしい もんだいを つくっています…';
   try{
    const res=await fetch('https://manabi-lab-api.yuchi1022.workers.dev/generate',{
@@ -124,7 +140,7 @@ async function start(m){
    queue=result.questions;
    $('aiStatus').textContent='AI が作成した新しい問題 · 残り '+(result.remaining??'—')+' 回';
   }catch(e){$('aiStatus').textContent='AI に接続できませんでした（'+e.message+'）。かわりに端末内で新しい問題を作りました。';}
- }else{$('aiStatus').textContent='端末内で作成した問題 · AI を使うには「保護者」で接続パスワードを設定してください。';}
+ }else{$('aiStatus').textContent=m==='math'?'計算で答えを確認した新しい算数問題 · AI 回数は使いません。':'端末内で作成した国語問題 · AI を使うには「保護者」で接続パスワードを設定してください。';}
  generating=false;renderQ();
 }
 
