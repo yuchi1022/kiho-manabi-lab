@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>まなびラボ AI テスト</title><style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;color:#24364b;background:#f4f8ff}*{box-sizing:border-box}body{margin:0;padding:22px 16px 60px}.wrap{max-width:600px;margin:auto}h1{font-size:24px;margin:12px 0 6px}p{line-height:1.6}.sub{color:#64748b;font-size:14px;margin:0 0 22px}.panel,.question{background:white;border:1px solid #dce7f5;border-radius:18px;padding:18px;margin:12px 0;box-shadow:0 3px 14px #1e3a5f0a}label{font-size:14px;font-weight:700;display:block;margin:14px 0 6px}input,select{font:inherit;width:100%;padding:13px;border-radius:11px;border:1px solid #bacde3;background:white;min-height:46px}button{font:inherit;border:0;background:#3178d5;color:white;padding:14px;border-radius:12px;width:100%;font-weight:700;margin-top:20px;min-height:48px}button:disabled{opacity:.5}.note{font-size:13px;color:#64748b}.status{white-space:pre-wrap;font-size:14px;line-height:1.6}.error{color:#b42318}.success{color:#167345}.q{font-weight:700;font-size:17px;white-space:pre-wrap}.options{padding-left:22px;line-height:1.8}.detail{background:#f2f7ff;padding:10px 12px;border-radius:10px;line-height:1.6;font-size:14px;margin-top:10px}summary{cursor:pointer;font-weight:600} .tag{display:inline-block;background:#e8f1ff;color:#285a9a;border-radius:99px;padding:4px 10px;font-size:12px;margin-bottom:10px}
+</style></head><body><main class="wrap"><h1>まなびラボ AI 出題診断テスト</h1><p class="sub">保護者用｜希帆・芽郁の AI 出題接続確認</p><section class="panel"><label for="token">LAB_ACCESS_TOKEN（Cloudflare に設定したパスワード）</label><input id="token" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="パスワードを入力"><p class="note">パスワードは保存しません。この画面を閉じると消えます。ChatGPT に送らないでください。</p><label for="child">こども</label><select id="child"><option value="mei">芽郁</option><option value="kiho">希帆</option></select><label for="subject">教科</label><select id="subject"><option value="math">さんすう</option><option value="reading">こくご</option></select><button id="run" type="button">AI で 3 もん つくる</button><p class="note">テストでも API 利用料が少額発生し、1 日の回数にカウントされます。</p></section><div id="status" class="status" role="status" aria-live="polite"></div><section id="results"></section></main><script>
+'use strict';
+
+function visualNode(v){
+ if(!v||typeof v!=='object')return null;
+ const NS='http://www.w3.org/2000/svg',svg=document.createElementNS(NS,'svg');
+ svg.setAttribute('viewBox','0 0 240 240');svg.setAttribute('role','img');svg.setAttribute('aria-label',v.type==='clock'?'とけい':'かずや かたち');
+ svg.style.cssText='width:100%;max-width:250px;height:auto;display:block;margin:12px auto;background:#fff;border-radius:14px';
+ const add=(tag,attrs,text)=>{const e=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,val])=>e.setAttribute(k,String(val)));if(text!==undefined)e.textContent=text;svg.appendChild(e);return e};
+ if(v.type==='clock'&&Number.isInteger(v.hour)&&v.hour>=1&&v.hour<=12&&Number.isInteger(v.minute)&&v.minute>=0&&v.minute<=55&&v.minute%5===0){
+  add('circle',{cx:120,cy:120,r:109,fill:'#fff',stroke:'#263e73','stroke-width':4});
+  for(let i=0;i<60;i++){let a=i*Math.PI/30,r=i%5===0?93:99;add('line',{x1:120+Math.sin(a)*r,y1:120-Math.cos(a)*r,x2:120+Math.sin(a)*104,y2:120-Math.cos(a)*104,stroke:'#64748b','stroke-width':i%5===0?2.5:1})}
+  for(let n=1;n<=12;n++){let a=n*Math.PI/6;add('text',{x:120+Math.sin(a)*78,y:125-Math.cos(a)*78,'font-size':19,'font-weight':700,'text-anchor':'middle',fill:'#1e293b'},String(n))}
+  const hourAngle=(v.hour%12+v.minute/60)*Math.PI/6,minAngle=v.minute*Math.PI/30;
+  add('line',{x1:120,y1:120,x2:120+Math.sin(hourAngle)*53,y2:120-Math.cos(hourAngle)*53,stroke:'#2455a5','stroke-width':8,'stroke-linecap':'round'});
+  add('line',{x1:120,y1:120,x2:120+Math.sin(minAngle)*88,y2:120-Math.cos(minAngle)*88,stroke:'#e05d4d','stroke-width':5,'stroke-linecap':'round'});
+  add('circle',{cx:120,cy:120,r:6,fill:'#263e73'});return svg;
+ }
+ if((v.type==='count'||v.type==='shapes')&&Number.isInteger(v.count)&&v.count>=1&&v.count<=15){
+  const type=v.type==='count'?v.symbol:v.shape;
+  for(let i=0;i<v.count;i++){const x=32+(i%4)*57,y=38+Math.floor(i/4)*55;
+   if(type==='triangle')add('polygon',{points:`${x},${y-15} ${x-17},${y+15} ${x+17},${y+15}`,fill:'#f6c95c',stroke:'#7c5c19','stroke-width':2});
+   else if(type==='square'||type==='block')add('rect',{x:x-16,y:y-16,width:32,height:32,rx:3,fill:'#7ba8e7',stroke:'#285a9a','stroke-width':2});
+   else if(type==='star')add('text',{x,y:y+13,'font-size':39,'text-anchor':'middle',fill:'#e5a522'},'★');
+   else add('circle',{cx:x,cy:y,r:17,fill:type==='apple'?'#e95c5c':'#8ab9e5',stroke:'#52677e','stroke-width':2});
+  }return svg;
+ }
+ return null;
+}
+
+const endpoint='https://manabi-lab-api.yuchi1022.workers.dev/generate';
+const button=document.getElementById('run'),status=document.getElementById('status'),results=document.getElementById('results');
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=String(text);return e}
+function detail(parent,title,body){const d=el('details','detail'),s=el('summary','',title);d.append(s,el('p','',body));parent.append(d)}
+button.addEventListener('click',async()=>{
+ const token=document.getElementById('token').value.trim();
+ if(!token){status.className='status error';status.textContent='パスワードを入力してください。';return}
+ button.disabled=true;status.className='status';status.textContent='AI が問題を作っています…';results.replaceChildren();
+ try{
+  const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','X-Lab-Token':token},body:JSON.stringify({child:document.getElementById('child').value,subject:document.getElementById('subject').value,weakSkills:[],recentSkills:[]})});
+  const data=await response.json();
+  if(!response.ok){let message=data.error||'Unknown error';if(response.status===401)message='パスワードが違うか、Worker の Secret 設定を確認してください。';if(response.status===429)message='今日の出題上限に達しました。';if(response.status===502)message='サーバーの詳細エラー: '+message;throw new Error(message+' (HTTP '+response.status+')')}
+  if(!Array.isArray(data.questions)){throw new Error('問題の形式が正しくありません。')}
+  status.className='status success';status.textContent='成功！ AI が '+data.questions.length+' 問作成しました。残りの出題回数: '+(data.remaining??'不明');
+  data.questions.forEach((q,i)=>{const card=el('article','question');card.append(el('span','tag',q.skill||'練習'),el('div','q',(i+1)+'. '+(q.q||'')));const picture=visualNode(q.visual);if(picture)card.append(picture);
+   if(Array.isArray(q.options)){const list=el('ol','options');q.options.forEach(x=>list.append(el('li','',x)));card.append(list);detail(card,'答えを見る',String(q.options[q.correct]??'')+'\n'+(q.explain||''))}
+   else{detail(card,'答えの例を見る',(q.model||'')+'\n'+(q.explain||''))}
+   detail(card,'ヒント',q.hint||'');results.append(card)})
+ }catch(e){status.className='status error';status.textContent='テスト失敗: '+e.message+'\n\n※ このページは GitHub Pages の URL から開いてください。iPhone に保存した HTML ファイルからは接続できません。'}
+ finally{button.disabled=false}
+});
+</script></body></html>
