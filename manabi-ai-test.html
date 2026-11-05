@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>まなびラボ AI テスト</title><style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;color:#24364b;background:#f4f8ff}*{box-sizing:border-box}body{margin:0;padding:22px 16px 60px}.wrap{max-width:600px;margin:auto}h1{font-size:24px;margin:12px 0 6px}p{line-height:1.6}.sub{color:#64748b;font-size:14px;margin:0 0 22px}.panel,.question{background:white;border:1px solid #dce7f5;border-radius:18px;padding:18px;margin:12px 0;box-shadow:0 3px 14px #1e3a5f0a}label{font-size:14px;font-weight:700;display:block;margin:14px 0 6px}input,select{font:inherit;width:100%;padding:13px;border-radius:11px;border:1px solid #bacde3;background:white;min-height:46px}button{font:inherit;border:0;background:#3178d5;color:white;padding:14px;border-radius:12px;width:100%;font-weight:700;margin-top:20px;min-height:48px}button:disabled{opacity:.5}.note{font-size:13px;color:#64748b}.status{white-space:pre-wrap;font-size:14px;line-height:1.6}.error{color:#b42318}.success{color:#167345}.q{font-weight:700;font-size:17px;white-space:pre-wrap}.options{padding-left:22px;line-height:1.8}.detail{background:#f2f7ff;padding:10px 12px;border-radius:10px;line-height:1.6;font-size:14px;margin-top:10px}summary{cursor:pointer;font-weight:600} .tag{display:inline-block;background:#e8f1ff;color:#285a9a;border-radius:99px;padding:4px 10px;font-size:12px;margin-bottom:10px}
+</style></head><body><main class="wrap"><h1>まなびラボ AI 出題テスト</h1><p class="sub">保護者用｜希帆・芽郁の AI 出題接続確認</p><section class="panel"><label for="token">LAB_ACCESS_TOKEN（Cloudflare に設定したパスワード）</label><input id="token" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="パスワードを入力"><p class="note">パスワードは保存しません。この画面を閉じると消えます。ChatGPT に送らないでください。</p><label for="child">こども</label><select id="child"><option value="mei">芽郁</option><option value="kiho">希帆</option></select><label for="subject">教科</label><select id="subject"><option value="math">さんすう</option><option value="reading">こくご</option></select><button id="run" type="button">AI で 3 もん つくる</button><p class="note">テストでも API 利用料が少額発生し、1 日の回数にカウントされます。</p></section><div id="status" class="status" role="status" aria-live="polite"></div><section id="results"></section></main><script>
+'use strict';
+const endpoint='https://manabi-lab-api.yuchi1022.workers.dev/generate';
+const button=document.getElementById('run'),status=document.getElementById('status'),results=document.getElementById('results');
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=String(text);return e}
+function detail(parent,title,body){const d=el('details','detail'),s=el('summary','',title);d.append(s,el('p','',body));parent.append(d)}
+button.addEventListener('click',async()=>{
+ const token=document.getElementById('token').value.trim();
+ if(!token){status.className='status error';status.textContent='パスワードを入力してください。';return}
+ button.disabled=true;status.className='status';status.textContent='AI が問題を作っています…';results.replaceChildren();
+ try{
+  const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','X-Lab-Token':token},body:JSON.stringify({child:document.getElementById('child').value,subject:document.getElementById('subject').value,weakSkills:[],recentSkills:[]})});
+  const data=await response.json();
+  if(!response.ok){let message=data.error||'Unknown error';if(response.status===401)message='パスワードが違うか、Worker の Secret 設定を確認してください。';if(response.status===429)message='今日の出題上限に達しました。';if(response.status===502)message='AI への接続か応答形式に問題があります。Cloudflare のログを確認してください。';throw new Error(message+' (HTTP '+response.status+')')}
+  if(!Array.isArray(data.questions)){throw new Error('問題の形式が正しくありません。')}
+  status.className='status success';status.textContent='成功！ AI が '+data.questions.length+' 問作成しました。残りの出題回数: '+(data.remaining??'不明');
+  data.questions.forEach((q,i)=>{const card=el('article','question');card.append(el('span','tag',q.skill||'練習'),el('div','q',(i+1)+'. '+(q.q||'')));
+   if(Array.isArray(q.options)){const list=el('ol','options');q.options.forEach(x=>list.append(el('li','',x)));card.append(list);detail(card,'答えを見る',String(q.options[q.correct]??'')+'\n'+(q.explain||''))}
+   else{detail(card,'答えの例を見る',(q.model||'')+'\n'+(q.explain||''))}
+   detail(card,'ヒント',q.hint||'');results.append(card)})
+ }catch(e){status.className='status error';status.textContent='テスト失敗: '+e.message+'\n\n※ このページは GitHub Pages の URL から開いてください。iPhone に保存した HTML ファイルからは接続できません。'}
+ finally{button.disabled=false}
+});
+</script></body></html>
