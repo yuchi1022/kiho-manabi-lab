@@ -172,17 +172,18 @@ const stories=[
 function generateQuestions(m){
  let seen=new Set(data.recentQuestions||[]),pool=[];
  if(m==='math'){
-  const skills=IS_MEI?['時計','時間の計算','条件整理','数カード','立体・面','数のくらべ','重なり','図形・回転']:['条件整理','数カード','数の条件','重なり','図形・回転','立体・面','数のくらべ','複数ステップ'];
-  let weak=s=>{let x=data.attempts.filter(z=>z.skill===s);return x.length?x.filter(z=>z.correct||z.corrected).length/x.length:0.5};
-  // 2026-10-05 confirmed item-level results, not inferred from deviation scores.
-  // Priority is adjusted by this child's own subsequent practice history.
-  const examPriority=["条件整理","図形・回転","重なり","立体・面","時間の計算"];
+  // Five-exam historical non-full-score patterns (2026-03 through 2026-10).
+  // These are priorities, not per-question provenance or a diagnosis.
+  const skills=["条件整理","図形・回転","立体・面","重なり","数の条件","数カード","複数ステップ","数のくらべ"];
+  const examPriority=["条件整理","図形・回転","立体・面","重なり","複数ステップ","数の条件","数カード"];
   const score=s=>{const p=examPriority.indexOf(s);const base=p<0?0.35:Math.max(0.55,0.95-p*0.075);const x=data.attempts.filter(z=>z.skill===s);if(!x.length)return base;const recent=x.slice(-8);const accuracy=recent.filter(z=>z.correct||z.corrected).length/recent.length;return base*0.55+(1-accuracy)*0.45;};
   const ordered=shuffle(skills).sort((a,b)=>score(b)-score(a));
   // Every short round samples multiple skills rather than repeating one type.
   for(let s of ordered){let q;for(let k=0;k<50;k++){q=examMath(s);if(!seen.has(q.q)&&!pool.some(x=>x.q===q.q))break}if(q&&!pool.some(x=>x.q===q.q))pool.push(q);if(pool.length===3)break}
  }else{
-  const selected=shuffle(examReading);
+  // Reading comprehension and concise reason-writing take precedence over rote items.
+  const priority=['心情理解','記述','内容理解','助詞','漢字の読み'];
+  const selected=shuffle(examReading).sort((a,b)=>priority.indexOf(a.skill)-priority.indexOf(b.skill));
   for(const q of selected){if(!seen.has(q.q))pool.push({...q});if(pool.length===3)break}
   if(pool.length<3){const names=shuffle(['みお','はな','りな','ゆき','たくみ','けん']);for(const id of shuffle([0,1,2,3,4,5])){const q=stories[id](names[id]);if(!pool.some(x=>x.q===q.q))pool.push(q);if(pool.length===3)break}}
  }
