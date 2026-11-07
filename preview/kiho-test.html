@@ -132,10 +132,12 @@ function examMath(skill){
   const diff=Math.abs(left-b);answer=diff+'こ';wrong=[(diff+1)+'こ',(diff+2)+'こ'];
   hint='りんごの のこりを だしてから くらべよう。';explain='りんごは '+left+'こ。みかんは '+b+'こ。ちがいは '+diff+'こ。';
  }else if(skill==='図形・回転'){
-  const arrows=['↑','→','↓','←'];a=rand(0,3);b=rand(1,3);let end=(a+b)%4;
-  q='やじるし「'+arrows[a]+'」を みぎに 90どずつ '+b+'かい まわします。\nさいごは どちらを むく？';
+  const arrows=['↑','→','↓','←'];a=rand(0,3);b=1;let end=(a+b)%4;
+  q='おてほんを みてね。\nこんどは「'+arrows[a]+'」を みぎに ひとつ まわすよ。\nどちらを むくかな？';
   answer=arrows[end];wrong=[arrows[(end+1)%4],arrows[(end+3)%4]];
-  hint='１かいずつ ゆっくり まわそう。';explain=Array.from({length:b+1},(_,i)=>arrows[(a+i)%4]).join(' → ');
+  visual={type:'rotation-example',from:'→',to:'↓'};
+  hint='おてほんの「→」が「↓」に なるように、みぎへ ひとつ まわそう。';
+  explain=arrows[a]+' が '+arrows[end]+' に なったね。';
  }else if(skill==='立体・面'){
   a=rand(1,6);answer=String(7-a);q='ふつうの さいころは、むかいあう めの かずを たすと ７ です。\n'+a+' の はんたいがわは いくつ？';
   wrong=[String(a===6?5:a+1),String(a===1?2:a-1)];
@@ -210,7 +212,7 @@ async function start(m){
  generating=false;renderQ();
 }
 
-function renderQ(){let q=queue[idx];usedHint=false;selected=null;wrongFirst=false;started=Date.now();$('topic').textContent=(mode==='math'?'さんすう · ':'こくご · ')+q.skill;$('counter').textContent=(idx+1)+' / '+queue.length;$('progress').style.width=(idx/queue.length*100)+'%';$('prompt').textContent=q.q;const visual=visualNode(q.visual);$('visualArea').replaceChildren();if(visual)$('visualArea').appendChild(visual);$('hintBox').classList.add('hide');$('feedback').classList.add('hide');$('nextBtn').classList.add('hide');$('hintBtn').classList.remove('hide');$('choices').innerHTML='';$('answerArea').classList.toggle('hide',mode!=='reading');$('submitBtn').classList.toggle('hide',mode!=='reading');if(mode==='reading')$('freeAnswer').value='';else q.options.forEach((v,i)=>{let b=document.createElement('button');b.className='btn option';b.textContent=v;b.onclick=()=>answerMath(i);$('choices').appendChild(b)})}
+function renderQ(){let q=queue[idx];usedHint=false;selected=null;wrongFirst=false;started=Date.now();$('topic').textContent=(mode==='math'?'さんすう · ':'こくご · ')+q.skill;$('counter').textContent=(idx+1)+' / '+queue.length;$('progress').style.width=(idx/queue.length*100)+'%';$('prompt').textContent=q.q;const visual=visualNode(q.visual);$('visualArea').replaceChildren();if(visual)$('visualArea').appendChild(visual);if(q.visual&&q.visual.type==='rotation-example'){const e=document.createElement('div');e.setAttribute('role','img');e.setAttribute('aria-label','おてほん：みぎむきの やじるしが したむきに かわる');e.style.cssText='text-align:center;background:#f0f7ff;border:2px solid #bed9f6;border-radius:16px;padding:12px;margin:10px auto;max-width:340px';const t=document.createElement('div');t.textContent='おてほん：みぎに ひとつ まわす';t.style.cssText='font-size:16px;font-weight:bold;margin-bottom:8px';const a=document.createElement('div');a.textContent='→　↷　↓';a.style.cssText='font-size:54px;line-height:1.3;color:#2455a5';e.append(t,a);$('visualArea').appendChild(e);}$('hintBox').classList.add('hide');$('feedback').classList.add('hide');$('nextBtn').classList.add('hide');$('hintBtn').classList.remove('hide');$('choices').innerHTML='';$('answerArea').classList.toggle('hide',mode!=='reading');$('submitBtn').classList.toggle('hide',mode!=='reading');if(mode==='reading')$('freeAnswer').value='';else q.options.forEach((v,i)=>{let b=document.createElement('button');b.className='btn option';b.textContent=v;b.onclick=()=>answerMath(i);$('choices').appendChild(b)})}
 function hint(){usedHint=true;$('hintBox').textContent='💡 '+queue[idx].hint;$('hintBox').classList.remove('hide')}
 function log(correct,corrected=false){data.attempts.push({date:new Date().toISOString(),mode,skill:queue[idx].skill,correct,hint:usedHint,corrected,seconds:Math.round((Date.now()-started)/1000)});save()}
 function endQ(msg){$('feedback').textContent=msg;$('feedback').classList.remove('hide');$('hintBtn').classList.add('hide');$('submitBtn').classList.add('hide');$('nextBtn').classList.remove('hide')}
