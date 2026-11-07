@@ -102,7 +102,7 @@ function makeMath(skill){
 function examMath(skill){
  const names=['あおい','はな','ゆき','みお'];let a,b,c,answer,wrong,q,hint,explain,visual=null;
  if(skill==='条件整理'){
-  const order=shuffle(names).slice(0,3);const target=rand(0,2);
+  const order=shuffle(names).slice(0,3);
   q=order[0]+'は '+order[1]+'より まえです。\n'+order[2]+'は '+order[1]+'より うしろです。\n'+order[0]+'の すぐ うしろは だれですか。';
   answer=order[1];wrong=[order[0],order[2]];hint='３にんを ひだりから じゅんに かいてみよう。';explain=order.join(' → ')+'。'+order[1]+'が すぐ うしろ。';
  }else if(skill==='数カード'){
@@ -132,7 +132,7 @@ function examMath(skill){
   const diff=Math.abs(left-b);answer=diff+'こ';wrong=[(diff+1)+'こ',(diff+2)+'こ'];
   hint='りんごの のこりを だしてから くらべよう。';explain='りんごは '+left+'こ。みかんは '+b+'こ。ちがいは '+diff+'こ。';
  }else if(skill==='図形・回転'){
-  const arrows=['↑','→','↓','←'];a=rand(0,3);b=1;let end=(a+b)%4;
+  const arrows=['↑','→','↓','←'];a=pick([0,2,3]);b=1;let end=(a+b)%4;
   q='おてほんを みてね。\nこんどは「'+arrows[a]+'」を みぎに ひとつ まわすよ。\nどちらを むくかな？';
   answer=arrows[end];wrong=[arrows[(end+1)%4],arrows[(end+3)%4]];
   visual={type:'rotation-example',from:'→',to:'↓'};
