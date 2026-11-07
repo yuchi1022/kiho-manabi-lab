@@ -1,0 +1,226 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#263e73"><title>希帆のまなびラボ</title><style>:root{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN',sans-serif;color:#213047;background:#f4f7fc}*{box-sizing:border-box}body{margin:0}main{max-width:620px;margin:auto;padding:18px 16px 70px}header{background:#263e73;color:white;padding:25px 20px 20px;border-radius:0 0 25px 25px}header small{opacity:.85}.tabs{display:flex;gap:8px;margin:15px 0}.tabs button{flex:1}.card{background:white;border-radius:18px;padding:18px;margin:13px 0;box-shadow:0 3px 15px #263e7310}.muted{color:#66758c;font-size:13px}.big{font-size:22px;font-weight:750;line-height:1.65;white-space:pre-line}.btn{border:0;border-radius:13px;padding:13px 16px;background:#e7ecf6;color:#263e73;font-weight:700;font-size:16px;cursor:pointer;min-height:48px}.primary{background:#315cba;color:white}.option{width:100%;display:block;text-align:left;margin:9px 0;background:#f4f7fc}.selected{outline:3px solid #315cba}button:disabled{opacity:.55}textarea,input,select{font:inherit;width:100%;border:1px solid #c8d1e0;border-radius:12px;padding:12px;background:white;color:#213047}textarea{min-height:110px}label{display:block;font-size:13px;font-weight:700;margin:12px 0 5px}.hide{display:none!important}.pill{display:inline-block;border-radius:30px;background:#eaf1ff;padding:6px 12px;font-size:13px}.flex{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#f1f5fc;border-radius:12px;padding:12px}.metric b{display:block;font-size:22px;margin-top:4px}.bar{height:9px;background:#e6ebf4;border-radius:10px;overflow:hidden}.bar>i{display:block;height:100%;background:#315cba}.feedback{background:#eef5ff;padding:14px;border-radius:12px;white-space:pre-line;line-height:1.7}.small{font-size:13px}.line{border-top:1px solid #e2e8f1;margin:15px 0}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:9px 4px;border-bottom:1px solid #e5eaf1;text-align:center}th:first-child,td:first-child{text-align:left}svg{width:100%;height:auto}.warning{background:#fff5e5;border-radius:12px;padding:12px;font-size:13px;line-height:1.7}footer{color:#77849a;text-align:center;font-size:12px;margin:30px 0}</style></head><body><header><small>小学１年生 · じぶんで考える</small><h1 style="margin:6px 0">希帆のまなびラボ 🌱</h1><small>できた！より、どう考えた？</small></header><main><div class="tabs"><button class="btn primary" id="kidtab">こども</button><button class="btn" id="parenttab">保護者</button></div><section id="kid"><div id="home"><div class="card"><strong>いまの れんしゅうポイント</strong><p>きもちと りゆうを みじかく こたえよう。じょうけんを ひとつずつ たしかめよう。</p><p class="muted">1にち 10〜15ぷんを めやすにしよう。</p></div><div class="card"><p id="aiStatus" class="muted"></p><div class="muted">きょうの 30ぷんチャレンジ</div><h2>なにを れんしゅうする？</h2><div class="split"><button class="btn primary" onclick="start('math')">🧩<br>さんすう</button><button class="btn primary" onclick="start('reading')">📖<br>こくご</button></div><p class="muted">１かい ３もん。さんすうと こくごを くみあわせて 30ぷん れんしゅうしよう。ヒントも つかえるよ。</p></div></div><div id="quiz" class="hide"><div class="card"><div class="flex" style="justify-content:space-between"><span class="pill" id="topic"></span><span id="counter" class="muted"></span></div><div class="bar" style="margin:15px 0"><i id="progress" style="width:0"></i></div><div class="big" id="prompt"></div><div id="visualArea"></div><div id="choices" style="margin-top:18px"></div><div id="answerArea" class="hide"><label>じぶんの こたえ</label><textarea id="freeAnswer" placeholder="みじかく かいても いいよ"></textarea></div><div id="hintBox" class="feedback hide" style="margin-top:12px"></div><div id="feedback" class="feedback hide" style="margin-top:12px"></div><div class="flex" style="margin-top:16px"><button class="btn" id="hintBtn" onclick="hint()">💡 ヒント</button><button class="btn primary hide" id="submitBtn" onclick="submitReading()">こたえを みる</button><button class="btn primary hide" id="nextBtn" onclick="next()">つぎへ →</button></div></div></div><div id="complete" class="card hide"><h2>🌟 おつかれさま！</h2><p id="completeText"></p><button class="btn primary" onclick="goHome()">ホームにもどる</button></div></section><section id="parent" class="hide"><div class="card"><h3>AI 出題設定（保護者）</h3><label>AI 接続パスワード（Cloudflare の LAB_ACCESS_TOKEN）</label><input id="labToken" type="password" autocomplete="off" placeholder="Cloudflare に保存したパスワード"><label style="font-weight:400"><input type="checkbox" id="rememberToken" style="width:auto;margin-right:7px">この端末に保存する（共有端末ではオフ）</label><p class="muted">保存しない場合はこのタブ内だけ有効です。パスワードは GitHub や HTML には書き込みません。</p><button class="btn primary" onclick="setLabToken()">AI を有効にする</button> <button class="btn" onclick="clearLabToken()">パスワードを消す</button><p id="tokenStatus" class="muted"></p></div><div class="card"><h2>保護者 Dashboard</h2><div class="split"><div class="metric"><span class="muted">累積練習題數</span><b id="attemptCount">0</b></div><div class="metric"><span class="muted">提示使用率</span><b id="hintRate">—</b></div></div><div class="metric" style="margin-top:10px"><span class="muted">自行訂正成功率</span><b id="correctionRate">—</b></div><h3>能力別の練習結果</h3><div id="skills"></div><p class="muted">國語自由記述由家長確認，不以關鍵字自動判分。</p></div><div class="card"><h3>個人化複習重點</h3><p class="muted">依已核對的 2026 年 10 月逐題正誤設定初始優先順序，再依本機練習紀錄調整。其他四次考卷的逐題分析尚未整合；新 PDF 尚未自動同步。</p><ol style="padding-left:22px;line-height:1.9"><li><b>1. 多條件推理</b>：條件整理、順序關係、兩步以上的題目</li><li><b>2. 國語記述效率</b>：練習用簡短句子回答重點，不追求一次寫到完美</li><li><b>3. 圖形與空間</b>：旋轉、立體與重疊</li></ol><p class="muted">建議每日先練 10～15 分鐘，觀察正確率、提示使用與解題速度，再逐步調整。</p></div><div class="card"><h3>早稲アカ成績推移</h3><div id="chart"></div><div style="overflow:auto"><table id="examTable"></table></div><p class="muted">偏差值。Jump Test 與 Challenge Test 的受測群體可能不同，請避免直接視為同一測驗的連續變化。</p></div><div class="card"><h3>雲端考卷上傳</h3><p class="muted">在已認證的 iPhone 上傳新考試問題卷與成績 PDF，安全保存到私人雲端。上傳尚不會自動分析或更新本頁成績。</p><a class="btn primary" style="display:block;text-align:center;text-decoration:none;margin:12px 0" href="https://manabi-lab-private-api.yuchi1022.workers.dev/" target="_blank" rel="noopener noreferrer">開啟考卷上傳頁面</a></div><div class="card"><h3>新考試成績を追加</h3><p class="muted">請先在 ChatGPT 上傳 PDF，請我輸出符合本工具格式的更新 JSON，再將 JSON 匯入此處。此離線版本不能直接解析考試 PDF。</p><label>更新 JSON 檔案</label><input type="file" id="importFile" accept=".json,application/json"><div class="flex" style="margin-top:12px"><button class="btn primary" onclick="importJSON()">匯入更新</button><button class="btn" onclick="exportJSON()">匯出完整備份</button></div><div id="importStatus" class="muted" style="margin-top:8px"></div></div><div class="card"><h3>資料保存與移轉</h3><div class="warning">此版本將紀錄儲存在目前瀏覽器的 localStorage。清除網站資料、換手機或改用其他瀏覽器時，紀錄可能消失。請定期匯出 JSON 備份。單獨開啟 HTML 檔案時，iPhone 的儲存行為也可能不穩定。</div><div class="flex" style="margin-top:12px"><button class="btn" onclick="exportJSON()">下載備份 JSON</button><button class="btn" onclick="resetAttempts()">清除練習紀錄</button></div></div></section><footer>希帆のまなびラボ · v3.0 · 学習記録は端末内に保存</footer></main><script>
+
+function visualNode(v){
+ if(!v||typeof v!=='object')return null;
+ const NS='http://www.w3.org/2000/svg',svg=document.createElementNS(NS,'svg');
+ svg.setAttribute('viewBox','0 0 240 240');svg.setAttribute('role','img');svg.setAttribute('aria-label',v.type==='clock'?'とけい':'かずや かたち');
+ svg.style.cssText='width:100%;max-width:250px;height:auto;display:block;margin:12px auto;background:#fff;border-radius:14px';
+ const add=(tag,attrs,text)=>{const e=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,val])=>e.setAttribute(k,String(val)));if(text!==undefined)e.textContent=text;svg.appendChild(e);return e};
+ if(v.type==='clock'&&Number.isInteger(v.hour)&&v.hour>=1&&v.hour<=12&&Number.isInteger(v.minute)&&v.minute>=0&&v.minute<=55&&v.minute%5===0){
+  add('circle',{cx:120,cy:120,r:109,fill:'#fff',stroke:'#263e73','stroke-width':4});
+  for(let i=0;i<60;i++){let a=i*Math.PI/30,r=i%5===0?93:99;add('line',{x1:120+Math.sin(a)*r,y1:120-Math.cos(a)*r,x2:120+Math.sin(a)*104,y2:120-Math.cos(a)*104,stroke:'#64748b','stroke-width':i%5===0?2.5:1})}
+  for(let n=1;n<=12;n++){let a=n*Math.PI/6;add('text',{x:120+Math.sin(a)*78,y:125-Math.cos(a)*78,'font-size':19,'font-weight':700,'text-anchor':'middle',fill:'#1e293b'},String(n))}
+  const hourAngle=(v.hour%12+v.minute/60)*Math.PI/6,minAngle=v.minute*Math.PI/30;
+  add('line',{x1:120,y1:120,x2:120+Math.sin(hourAngle)*53,y2:120-Math.cos(hourAngle)*53,stroke:'#2455a5','stroke-width':8,'stroke-linecap':'round'});
+  add('line',{x1:120,y1:120,x2:120+Math.sin(minAngle)*88,y2:120-Math.cos(minAngle)*88,stroke:'#e05d4d','stroke-width':5,'stroke-linecap':'round'});
+  add('circle',{cx:120,cy:120,r:6,fill:'#263e73'});return svg;
+ }
+ if((v.type==='count'||v.type==='shapes')&&Number.isInteger(v.count)&&v.count>=1&&v.count<=15){
+  const type=v.type==='count'?v.symbol:v.shape;
+  for(let i=0;i<v.count;i++){const x=32+(i%4)*57,y=38+Math.floor(i/4)*55;
+   if(type==='triangle')add('polygon',{points:`${x},${y-15} ${x-17},${y+15} ${x+17},${y+15}`,fill:'#f6c95c',stroke:'#7c5c19','stroke-width':2});
+   else if(type==='square'||type==='block')add('rect',{x:x-16,y:y-16,width:32,height:32,rx:3,fill:'#7ba8e7',stroke:'#285a9a','stroke-width':2});
+   else if(type==='star')add('text',{x,y:y+13,'font-size':39,'text-anchor':'middle',fill:'#e5a522'},'★');
+   else add('circle',{cx:x,cy:y,r:17,fill:type==='apple'?'#e95c5c':'#8ab9e5',stroke:'#52677e','stroke-width':2});
+  }return svg;
+ }
+ return null;
+}
+
+let labToken='';
+try{labToken=localStorage.getItem('manabi-ai-access-token')||sessionStorage.getItem('manabi-ai-access-token')||''}catch(e){}
+function setLabToken(){
+ const token=$('labToken').value.trim();if(!token){$('tokenStatus').textContent='パスワードを入力してください。';return}
+ labToken=token;$('labToken').value='';
+ try{if($('rememberToken').checked){localStorage.setItem('manabi-ai-access-token',token);sessionStorage.removeItem('manabi-ai-access-token')}else{sessionStorage.setItem('manabi-ai-access-token',token);localStorage.removeItem('manabi-ai-access-token')}}catch(e){}
+ $('tokenStatus').textContent='AI を有効にしました。こくごは AI、さんすうは計算で検証した問題を作ります。';
+}
+function clearLabToken(){labToken='';try{localStorage.removeItem('manabi-ai-access-token');sessionStorage.removeItem('manabi-ai-access-token')}catch(e){}$('tokenStatus').textContent='パスワードを消しました。'}
+
+function getWeakSkills(){const groups={};for(const a of data.attempts){if(!groups[a.skill])groups[a.skill]={n:0,c:0};groups[a.skill].n++;if(a.correct||a.corrected)groups[a.skill].c++}return Object.entries(groups).sort((a,b)=>a[1].c/a[1].n-b[1].c/b[1].n).slice(0,5).map(x=>x[0])}
+
+const seed=[{date:'2026-03',type:'Challenge',japanese:61.7,math:64.2,total:64.2},{date:'2026-05',type:'Jump',japanese:50.5,math:63.9,total:57},{date:'2026-06',type:'Challenge',japanese:52.8,math:55.3,total:54.1},{date:'2026-08',type:'Challenge',japanese:60.7,math:61.5,total:62.2},{date:'2026-10',type:'Jump',japanese:52.2,math:48.7,total:50.7}];
+const questions={math:[{skill:'条件整理',q:'あかい シールが ８まい あります。\nあおい シールは あかより ３まい すくないです。\nきいろい シールは あおより ２まい おおいです。\n\nきいろい シールは なんまい？',options:['５まい','７まい','９まい'],correct:1,hint:'あおい シールの かずを さきに かんがえよう。',explain:'あお：８−３＝５。きいろ：５＋２＝７。じゅんばんに せいりできたね。'},{skill:'順序・条件',q:'ゆいさんは まいさんより まえ。\nまいさんは そらさんより まえ。\n\nいちばん うしろは だれ？',options:['ゆいさん','まいさん','そらさん'],correct:2,hint:'ゆい → まい → ？ と かいてみよう。',explain:'ゆい → まい → そら の じゅんばんだよ。'},{skill:'複数ステップ',q:'□ ＋ ４ ＝ １２\n\n□ より ３ おおきい かずは？',options:['８','１１','１５'],correct:1,hint:'まず □ の かずを だそう。',explain:'□は８。８＋３＝１１。２つの ステップを とけたね。'},{skill:'図形',q:'おなじ おおきさの しかくい タイルが ６まい。\n２まいを つかって ひとつの ながしかくを つくると、\nなんこ つくれる？',options:['２こ','３こ','４こ'],correct:1,hint:'６まいを ２まいずつに わけよう。',explain:'６÷２＝３。３この ながしかくが できるよ。'}],reading:[{skill:'心情理解',q:'みおは こうえんへ いくのを たのしみに していました。ところが、あめが ふってきました。みおは ためいきを つきました。\n\nどうして ためいきを つきましたか。',model:'こうえんで あそべなくなりそうで、ざんねんだったから。',hint:'「なにが おきた？」と「どんな きもち？」を つなげよう。',explain:'こうえんを たのしみにしていたことと、あめが ふったことが だいじだよ。'},{skill:'心情理解',q:'たくみは ともだちの えんぴつを ひろいました。ともだちは「ありがとう」と いいました。たくみは にっこり わらいました。\n\nどうして わらいましたか。',model:'ともだちに ありがとうと いわれて、うれしかったから。',hint:'ともだちは なんと いったかな？',explain:'「ありがとう」と いわれて うれしかったんだね。'},{skill:'記述',q:'りなは むずかしい パズルに なんども ちょうせんしました。さいごに できあがると「やった！」と いいました。\n\nどうして「やった！」と いいましたか。',model:'むずかしい パズルを さいごまで できて、うれしかったから。',hint:'なにが できて、どんな きもちに なった？',explain:'がんばったことと けっかを みじかく かこう。'}]};
+const $=id=>document.getElementById(id);let data;try{data=JSON.parse(localStorage.getItem('kiho-lab-v1'))}catch(e){}if(!data||!Array.isArray(data.exams)||!Array.isArray(data.attempts))data={version:1,exams:seed,attempts:[]};function save(){try{localStorage.setItem('kiho-lab-v1',JSON.stringify(data))}catch(e){alert('保存できませんでした。バックアップを作成してください。')}}
+const IS_MEI=false;
+// Offline question generator: a new set is created each time practice starts.
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const rand=(lo,hi)=>lo+Math.floor(Math.random()*(hi-lo+1));
+const shuffle=a=>{let b=[...a];for(let i=b.length-1;i>0;i--){let j=rand(0,i);[b[i],b[j]]=[b[j],b[i]]}return b};
+function choiceQ(skill,q,answer,wrong,hint,explain,visual=null){
+ let opts=shuffle([...new Set([String(answer),...wrong.map(String)])]);
+ if(opts.length!==3||!opts.includes(String(answer)))throw Error('invalid choices');
+ return {skill,q,options:opts,correct:opts.indexOf(String(answer)),hint,explain,visual};
+}
+function makeMath(skill){
+ let a,b,c,ans,n,visual=null,q='',hint='',explain='',wrong=[],unit='';
+ if(skill==='時計'){
+  const hour=rand(1,11),minute=pick([0,15,30,45]);
+  const fmt=(h,m)=>h+'じ'+(m===0?'':m+'ふん');
+  ans=fmt(hour,minute);unit='';
+  const times=[[(hour%12)+1,minute],[hour,(minute+15)%60],[hour,minute===0?30:0],[(hour+10)%12+1,minute]];
+  wrong=[...new Set(times.map(t=>fmt(t[0],t[1])).filter(t=>t!==ans))].slice(0,2);
+  visual={type:'clock',hour,minute};q='この とけいは なんじ なんぷん ですか。';
+  hint='みじかい はりと ながい はりを みよう。';explain='この とけいは '+ans+' です。';
+  return choiceQ(skill,q,ans,wrong,hint,explain,visual);
+ }
+ if(skill==='文章題'){
+  a=rand(6,14);b=rand(1,a-2);c=rand(1,5);ans=a-b+c;unit='こ';
+  const item=pick(['りんご','みかん','あめ','シール']);
+  q=item+'が '+a+'こ あります。'+b+'こ つかって、'+c+'こ もらいました。いま なんこ ありますか。';
+  wrong=[a+b+c,a-b];hint='つかったら へる、もらったら ふえるよ。';
+  explain=a+'−'+b+'＋'+c+'＝'+ans+'こ。';
+ }else if(skill==='条件整理'||skill==='順序・条件'){
+  const names=shuffle(['あか','あお','きいろ','みどり','しろ']).slice(0,3);
+  q=names[0]+'は '+names[1]+'より まえ。\n'+names[1]+'は '+names[2]+'より まえ。\nいちばん うしろは だれ？';
+  hint='じゅんばんに ならべてみよう。';explain=names.join(' → ')+' の じゅんばん。';
+  return choiceQ(skill,q,names[2],[names[0],names[1]],hint,explain);
+ }else if(skill==='図形'){
+  n=rand(3,9);ans=n;unit='こ';const shape=pick(['triangle','square','circle']);
+  visual={type:'shapes',shape,count:n};q='この ずけいは ぜんぶで なんこ ありますか。';
+  wrong=[n-1,n+1];hint='ひとつずつ ゆびで かぞえよう。';explain=n+'こ あります。';
+ }else if(skill==='複数ステップ'){
+  a=rand(3,10);b=rand(2,7);c=rand(2,6);ans=a+c;
+  q='□ ＋ '+b+' ＝ '+(a+b)+'\n□ より '+c+' おおきい かずは？';
+  wrong=[a,ans+c];hint='まず □ の かずを だそう。';explain='□＝'+a+'。'+a+'＋'+c+'＝'+ans+'。';
+ }else{
+  a=rand(3,9);b=rand(2,8);ans=a;
+  q=a+'＋'+b+'＝'+(a+b)+'。\nでは '+(a+b)+'−'+b+' は？';
+  wrong=[ans-1,ans+1];hint='たしざんを ひきざんで たしかめよう。';explain=(a+b)+'−'+b+'＝'+ans+'。';skill='みなおし';
+ }
+ const answer=String(ans)+unit;
+ const options=wrong.map(x=>String(x)+unit);
+ // The correct answer is calculated first; distractors are distinct and cannot match it.
+ let delta=2;
+ while(new Set([answer,...options]).size<3){
+  for(let i=0;i<options.length;i++)if(options[i]===answer||options.indexOf(options[i])!==i){options[i]=String(Number(ans)+delta++)+unit}
+ }
+ return choiceQ(skill,q,answer,options,hint,explain,visual);
+}
+
+// v3 exam-aligned question families: programmatic answers, three unique options.
+function examMath(skill){
+ const names=['あおい','はな','ゆき','みお'];let a,b,c,answer,wrong,q,hint,explain,visual=null;
+ if(skill==='条件整理'){
+  const order=shuffle(names).slice(0,3);const target=rand(0,2);
+  q=order[0]+'は '+order[1]+'より まえです。\n'+order[2]+'は '+order[1]+'より うしろです。\n'+order[0]+'の すぐ うしろは だれですか。';
+  answer=order[1];wrong=[order[0],order[2]];hint='３にんを ひだりから じゅんに かいてみよう。';explain=order.join(' → ')+'。'+order[1]+'が すぐ うしろ。';
+ }else if(skill==='数カード'){
+  const vals=shuffle([1,2,3,4,5,6,7,8,9]).slice(0,3).sort((x,y)=>x-y);
+  a=vals[0];b=vals[1];c=vals[2];answer=String(b);
+  q='３まいの カードは '+a+'、'+b+'、'+c+' です。\nいちばん おおきい かずと いちばん ちいさい かずの あいだに ある かずは？';
+  wrong=[String(a),String(c)];hint='ちいさい じゅんに ならべよう。';explain=a+' ＜ '+b+' ＜ '+c+'。';
+ }else if(skill==='数の条件'){
+  a=rand(2,6);b=rand(2,6);c=a+b;answer=String(a);
+  q='２まいの カードの かずを たすと '+c+' です。\n１まいは '+b+' です。もう １まいは いくつ？';
+  wrong=[String(a+1),String(a-1)];hint='ぜんぶから わかっている かずを ひこう。';explain=c+' − '+b+' ＝ '+a+'。';
+ }else if(skill==='時計'){
+  a=rand(1,11);b=pick([0,15,30,45]);visual={type:'clock',hour:a,minute:b};
+  const fmt=(h,m)=>h+'じ'+(m===0?'':m+'ふん');answer=fmt(a,b);
+  wrong=[fmt(a%12+1,b),fmt(a,(b+30)%60)];q='この とけいは なんじ なんぷん？';
+  hint='みじかい はりは じかん。ながい はりは ふん。';explain=answer+' です。';
+ }else if(skill==='時間の計算'){
+  a=rand(1,10);b=pick([0,30]);c=pick([15,30]);let minutes=a*60+b+c;let h=Math.floor(minutes/60),m=minutes%60;
+  const fmt=(hh,mm)=>hh+'じ'+(mm===0?'':mm+'ふん');answer=fmt(h,m);
+  q=fmt(a,b)+'から '+c+'ふん たちました。なんじ なんぷん？';
+  wrong=[fmt(a,b),fmt(h,m===0?30:0)];hint='ながい はりを '+c+'ふん すすめよう。';explain=fmt(a,b)+' ＋ '+c+'ふん ＝ '+answer+'。';
+ }else if(skill==='数のくらべ'){
+  a=rand(7,12);b=rand(3,6);c=rand(1,3);let left=a-c;answer=left>b?String(left-b)+'こ':left<b?String(b-left)+'こ':'おなじ';
+  // Ensure strict difference and simple numeric choices.
+  if(left===b)return examMath(skill);
+  q='りんごが '+a+'こ、みかんが '+b+'こ。\nりんごを '+c+'こ たべました。\nいま、おおい ほうは なんこ おおい？';
+  const diff=Math.abs(left-b);answer=diff+'こ';wrong=[(diff+1)+'こ',(diff+2)+'こ'];
+  hint='りんごの のこりを だしてから くらべよう。';explain='りんごは '+left+'こ。みかんは '+b+'こ。ちがいは '+diff+'こ。';
+ }else if(skill==='図形・回転'){
+  const arrows=['↑','→','↓','←'];a=rand(0,3);b=rand(1,3);let end=(a+b)%4;
+  q='やじるし「'+arrows[a]+'」を みぎに 90どずつ '+b+'かい まわします。\nさいごは どちらを むく？';
+  answer=arrows[end];wrong=[arrows[(end+1)%4],arrows[(end+3)%4]];
+  hint='１かいずつ ゆっくり まわそう。';explain=Array.from({length:b+1},(_,i)=>arrows[(a+i)%4]).join(' → ');
+ }else if(skill==='立体・面'){
+  a=rand(1,6);answer=String(7-a);q='ふつうの さいころは、むかいあう めの かずを たすと ７ です。\n'+a+' の はんたいがわは いくつ？';
+  wrong=[String(a===6?5:a+1),String(a===1?2:a-1)];
+  // Avoid duplicates and correct-value distractors.
+  wrong=[...new Set(wrong.filter(x=>x!==answer))];for(let k=1;wrong.length<2&&k<=6;k++)if(String(k)!==answer&&!wrong.includes(String(k)))wrong.push(String(k));
+  hint='２つの めを あわせて ７ に しよう。';explain=a+' ＋ '+answer+' ＝ ７。';
+ }else if(skill==='重なり'){
+  a=rand(5,9);b=rand(4,8);c=rand(1,Math.min(a,b)-1);answer=String(a+b-c)+'にん';
+  q='あかい ぼうしの こが '+a+'にん、あおい ふくの こが '+b+'にん。\nりょうほうに あてはまる こが '+c+'にん。\nぜんぶで なんにん？';
+  wrong=[String(a+b)+'にん',String(a+b-c+1)+'にん'];hint='りょうほうの こを ２かい かぞえないように。';explain=a+' ＋ '+b+' − '+c+' ＝ '+(a+b-c)+'にん。';
+ }else return makeMath('複数ステップ');
+ wrong=[...new Set(wrong.map(String).filter(x=>x!==String(answer)))];
+ for(let k=1;wrong.length<2;k++){const fallback=String(k)+(String(answer).endsWith('こ')?'こ':String(answer).endsWith('にん')?'にん':'');if(fallback!==String(answer)&&!wrong.includes(fallback))wrong.push(fallback)}
+ return choiceQ(skill,q,answer,wrong.slice(0,2),hint,explain,visual);
+}
+const examReading=[
+ {skill:'心情理解',q:'さきは いっしょうけんめい つくった さくひんを みんなに みせました。でも、だれも すぐには なにも いいませんでした。さきは したを むきました。\n\nさきは どんな きもちに なりましたか。なぜ そう おもいましたか。',model:'みんなが なにも いわなかったので、しんぱいに なった。',hint:'さきが したを むいた りゆうを かんがえよう。',explain:'きもちと、その りゆうを ひとつずつ かこう。'},
+ {skill:'記述',q:'たくみは かけっこで まけました。くやしかったけれど、つぎの ひも こうえんで はしる れんしゅうを しました。\n\nたくみは どうして れんしゅうを つづけましたか。みじかく こたえましょう。',model:'つぎは かけっこで かちたいから。',hint:'「どうして」に こたえる ことばを さがそう。',explain:'ながい ぶんより、りゆうが つたわる ぶんが だいじ。'},
+ {skill:'助詞',q:'「わたし（　）ほん（　）よみます。」\n\n（　）に はいる ことばを じゅんに かきましょう。',model:'は、を',hint:'だれが なにを するか かんがえよう。',explain:'「わたしは ほんを よみます。」'},
+ {skill:'漢字の読み',q:'「山」「川」「空」の よみかたを じゅんに かきましょう。',model:'やま、かわ、そら',hint:'ひとつずつ こえに だして よもう。',explain:'山＝やま、川＝かわ、空＝そら。'},
+ {skill:'内容理解',q:'あおいは かさを わすれました。かえりに あめが ふりだしました。ゆきは じぶんの かさに あおいを いれて、いっしょに かえりました。\n\nあおいは どうして ぬれずに かえれましたか。',model:'ゆきが かさに いれてくれたから。',hint:'だれが なにを してくれたかな。',explain:'ぶんの なかの できごとを もとに こたえよう。'}
+];
+
+const stories=[
+ (n)=>({skill:'心情理解',q:n+'は こうえんへ いくのを たのしみに していました。ところが、あめが ふってきました。'+n+'は ためいきを つきました。\n\nどうして ためいきを つきましたか。',model:'あめで こうえんに いけなくなりそうで、ざんねんだったから。',hint:'たのしみに していたことは なにかな？',explain:'できごとと きもちを つなげよう。'}),
+ (n)=>({skill:'心情理解',q:n+'は えを かきました。せんせいが「すてきだね」と いうと、'+n+'は にっこりしました。\n\nどうして にっこり しましたか。',model:'せんせいに えを ほめられて、うれしかったから。',hint:'せんせいは なんと いったかな？',explain:'ほめられた きもちを かんがえよう。'}),
+ (n)=>({skill:'内容理解',q:n+'は あさ、かさを もって でかけました。そとは くもって いて、ひるから あめが ふる よほうです。\n\nどうして かさを もって いきましたか。',model:'ひるから あめが ふる よほうだったから。',hint:'ひるからの てんきは？',explain:'ぶんしょうに かいてある りゆうを さがそう。'}),
+ (n)=>({skill:'記述',q:n+'は むずかしい パズルに なんども ちょうせんしました。さいごに できあがると「やった！」と いいました。\n\nどうして「やった！」と いいましたか。',model:'むずかしい パズルが できて、うれしかったから。',hint:'なにが できて、どんな きもちかな？',explain:'りゆうを みじかく かこう。'}),
+ (n)=>({skill:'内容理解',q:n+'は あさ ほんを かりました。ひるに ほんを よみ、ゆうがた としょかんへ かえしました。\n\nいつ ほんを かえしましたか。',model:'ゆうがた。',hint:'「かえしました」の まえを よもう。',explain:'じかんを あらわす ことばを さがそう。'}),
+ (n)=>({skill:'心情理解',q:n+'は ともだちが おとしてしまった えんぴつを ひろいました。ともだちに「ありがとう」と いわれて、うれしく なりました。\n\nどうして うれしく なりましたか。',model:'ともだちに ありがとうと いわれたから。',hint:'ともだちは なんと いったかな？',explain:'ぶんしょうから りゆうを みつけよう。'})
+];
+function generateQuestions(m){
+ let seen=new Set(data.recentQuestions||[]),pool=[];
+ if(m==='math'){
+  const skills=IS_MEI?['時計','時間の計算','条件整理','数カード','立体・面','数のくらべ','重なり','図形・回転']:['条件整理','数カード','数の条件','重なり','図形・回転','立体・面','数のくらべ','複数ステップ'];
+  let weak=s=>{let x=data.attempts.filter(z=>z.skill===s);return x.length?x.filter(z=>z.correct||z.corrected).length/x.length:0.5};
+  // 2026-10-05 confirmed item-level results, not inferred from deviation scores.
+  // Priority is adjusted by this child's own subsequent practice history.
+  const examPriority=["条件整理","図形・回転","重なり","立体・面","時間の計算"];
+  const score=s=>{const p=examPriority.indexOf(s);const base=p<0?0.35:Math.max(0.55,0.95-p*0.075);const x=data.attempts.filter(z=>z.skill===s);if(!x.length)return base;const recent=x.slice(-8);const accuracy=recent.filter(z=>z.correct||z.corrected).length/recent.length;return base*0.55+(1-accuracy)*0.45;};
+  const ordered=shuffle(skills).sort((a,b)=>score(b)-score(a));
+  // Every short round samples multiple skills rather than repeating one type.
+  for(let s of ordered){let q;for(let k=0;k<50;k++){q=examMath(s);if(!seen.has(q.q)&&!pool.some(x=>x.q===q.q))break}if(q&&!pool.some(x=>x.q===q.q))pool.push(q);if(pool.length===3)break}
+ }else{
+  const selected=shuffle(examReading);
+  for(const q of selected){if(!seen.has(q.q))pool.push({...q});if(pool.length===3)break}
+  if(pool.length<3){const names=shuffle(['みお','はな','りな','ゆき','たくみ','けん']);for(const id of shuffle([0,1,2,3,4,5])){const q=stories[id](names[id]);if(!pool.some(x=>x.q===q.q))pool.push(q);if(pool.length===3)break}}
+ }
+ data.recentQuestions=[...(data.recentQuestions||[]),...pool.map(x=>x.q)].slice(-35);save();return pool;
+}
+
+let mode='math',queue=[],idx=0,usedHint=false,started=0,selected=null,wrongFirst=false;function tab(t){$('kid').classList.toggle('hide',t!=='kid');$('parent').classList.toggle('hide',t!=='parent');$('kidtab').classList.toggle('primary',t==='kid');$('parenttab').classList.toggle('primary',t==='parent');if(t==='parent')renderDashboard()}$('kidtab').onclick=()=>tab('kid');$('parenttab').onclick=()=>tab('parent');
+let generating=false;
+async function start(m){
+ if(generating)return;generating=true;mode=m;idx=0;queue=generateQuestions(m);
+ $('home').classList.add('hide');$('complete').classList.add('hide');$('quiz').classList.remove('hide');
+ $('topic').textContent=m==='math'?'さんすう':'こくご';$('counter').textContent='';$('prompt').textContent='';$('choices').replaceChildren();$('visualArea').replaceChildren();$('feedback').classList.add('hide');$('hintBox').classList.add('hide');$('nextBtn').classList.add('hide');$('hintBtn').classList.add('hide');$('submitBtn').classList.add('hide');$('answerArea').classList.add('hide');
+ if(labToken && m==='reading'){
+  $('aiStatus').textContent='AI が あたらしい もんだいを つくっています…';
+  try{
+   const res=await fetch('https://manabi-lab-api.yuchi1022.workers.dev/generate',{
+    method:'POST',headers:{'Content-Type':'application/json','X-Lab-Token':labToken},
+    body:JSON.stringify({child:'kiho',subject:m,weakSkills:getWeakSkills(),recentSkills:data.attempts.slice(-8).map(x=>x.skill)})
+   });
+   const result=await res.json();
+   if(!res.ok)throw Error((result.error||'HTTP '+res.status)+' ('+res.status+')');
+   if(!Array.isArray(result.questions)||result.questions.length!==3)throw Error('問題の形式が違います');
+   queue=result.questions;
+   $('aiStatus').textContent='AI が作成した新しい問題 · 残り '+(result.remaining??'—')+' 回';
+  }catch(e){$('aiStatus').textContent='AI に接続できませんでした（'+e.message+'）。かわりに端末内で新しい問題を作りました。';}
+ }else{$('aiStatus').textContent=m==='math'?'計算で答えを確認した新しい算数問題 · AI 回数は使いません。':'端末内で作成した国語問題 · AI を使うには「保護者」で接続パスワードを設定してください。';}
+ generating=false;renderQ();
+}
+
+function renderQ(){let q=queue[idx];usedHint=false;selected=null;wrongFirst=false;started=Date.now();$('topic').textContent=(mode==='math'?'さんすう · ':'こくご · ')+q.skill;$('counter').textContent=(idx+1)+' / '+queue.length;$('progress').style.width=(idx/queue.length*100)+'%';$('prompt').textContent=q.q;const visual=visualNode(q.visual);$('visualArea').replaceChildren();if(visual)$('visualArea').appendChild(visual);$('hintBox').classList.add('hide');$('feedback').classList.add('hide');$('nextBtn').classList.add('hide');$('hintBtn').classList.remove('hide');$('choices').innerHTML='';$('answerArea').classList.toggle('hide',mode!=='reading');$('submitBtn').classList.toggle('hide',mode!=='reading');if(mode==='reading')$('freeAnswer').value='';else q.options.forEach((v,i)=>{let b=document.createElement('button');b.className='btn option';b.textContent=v;b.onclick=()=>answerMath(i);$('choices').appendChild(b)})}
+function hint(){usedHint=true;$('hintBox').textContent='💡 '+queue[idx].hint;$('hintBox').classList.remove('hide')}
+function log(correct,corrected=false){data.attempts.push({date:new Date().toISOString(),mode,skill:queue[idx].skill,correct,hint:usedHint,corrected,seconds:Math.round((Date.now()-started)/1000)});save()}
+function endQ(msg){$('feedback').textContent=msg;$('feedback').classList.remove('hide');$('hintBtn').classList.add('hide');$('submitBtn').classList.add('hide');$('nextBtn').classList.remove('hide')}
+function answerMath(i){let q=queue[idx];if(!wrongFirst&&i!==q.correct){wrongFirst=true;usedHint=true;$('hintBox').textContent='もういちど みなおそう！\n'+q.hint;$('hintBox').classList.remove('hide');return}let corrected=wrongFirst&&i===q.correct;$('choices').querySelectorAll('button').forEach((b,j)=>{b.disabled=true;if(j===q.correct)b.style.background='#d7f4e3'});log(!wrongFirst&&i===q.correct,corrected);endQ((i===q.correct?'せいかい！\n':'いっしょに かくにんしよう。\n')+q.explain)}
+function submitReading(){let v=$('freeAnswer').value.trim();if(!v){alert('まずは ひとこと かいてみよう');return}let q=queue[idx];let area=document.createElement('div');area.innerHTML='<p class="small">おうちのひとと こたえを くらべよう。</p><p class="small">おてほん：<b></b></p><p class="small"></p><div class="flex"><button class="btn" id="yes">だいじなことが かけた</button><button class="btn" id="no">もういちど れんしゅう</button></div>';area.querySelector('b').textContent=q.model;area.querySelectorAll('p')[2].textContent=q.explain;$('feedback').innerHTML='';$('feedback').appendChild(area);$('feedback').classList.remove('hide');$('hintBtn').classList.add('hide');$('submitBtn').classList.add('hide');area.querySelector('#yes').onclick=()=>finishReading(true);area.querySelector('#no').onclick=()=>finishReading(false)}
+function finishReading(correct){log(correct);$('feedback').textContent=correct?'だいじな ことを かけたね！':'つぎは もっと みじかく かいてみよう。';$('nextBtn').classList.remove('hide')}
+function next(){idx++;if(idx>=queue.length){$('quiz').classList.add('hide');$('complete').classList.remove('hide');$('completeText').textContent='３もん おわったよ。つぎは もうひとつの きょうかにも ちょうせんしよう！'}else renderQ()}
+function goHome(){$('complete').classList.add('hide');$('home').classList.remove('hide')}
+function renderDashboard(){let a=data.attempts;$('attemptCount').textContent=a.length;$('hintRate').textContent=a.length?Math.round(100*a.filter(x=>x.hint).length/a.length)+'%':'—';let corrections=a.filter(x=>x.corrected||(!x.correct&&x.mode==='math'));$('correctionRate').textContent=corrections.length?Math.round(100*corrections.filter(x=>x.corrected).length/corrections.length)+'%':'—';let skills=[...new Set(a.map(x=>x.skill))];$('skills').innerHTML=skills.length?'':'<p class="muted">練習記錄尚未建立。</p>';skills.forEach(s=>{let x=a.filter(y=>y.skill===s),r=Math.round(100*x.filter(y=>y.correct||y.corrected).length/x.length);let d=document.createElement('div');d.style.margin='12px 0';d.innerHTML='<div class="flex" style="justify-content:space-between"><b></b><span class="muted"></span></div><div class="bar"><i></i></div>';d.querySelector('b').textContent=s;d.querySelector('span').textContent=r+'% · '+x.length+' 題';d.querySelector('i').style.width=r+'%';$('skills').appendChild(d)});let exams=[...data.exams].sort((a,b)=>a.date.localeCompare(b.date));let W=350,H=170,px=i=>35+(exams.length<=1?0:i*(W-48)/(exams.length-1)),py=v=>H-24-(v-40)*4.4;let svg='<svg viewBox="0 0 350 170" role="img" aria-label="偏差值走勢">';[40,50,60,70].forEach(v=>svg+=`<line x1="30" y1="${py(v)}" x2="345" y2="${py(v)}" stroke="#dce4ef"/><text x="3" y="${py(v)+4}" font-size="11" fill="#66758c">${v}</text>`);[['japanese','#d66b91'],['math','#3274cc'],['total','#29976e']].forEach(([key,c])=>{svg+=`<polyline fill="none" stroke="${c}" stroke-width="2.5" points="${exams.map((e,i)=>px(i)+','+py(e[key])).join(' ')}"/>`;exams.forEach((e,i)=>svg+=`<circle cx="${px(i)}" cy="${py(e[key])}" r="3.2" fill="${c}"/>`)});exams.forEach((e,i)=>svg+=`<text x="${px(i)}" y="164" text-anchor="middle" font-size="10" fill="#66758c">${e.date.slice(5)}月</text>`);svg+='</svg><div class="flex small"><span style="color:#d66b91">● 国語</span><span style="color:#3274cc">● 算数</span><span style="color:#29976e">● 総合</span></div>';$('chart').innerHTML=svg;$('examTable').innerHTML='<tr><th>日期</th><th>測驗</th><th>國語</th><th>數學</th><th>總合</th></tr>'+exams.map(e=>`<tr><td>${e.date}</td><td>${e.type==='Jump'?'Jump':'Challenge'}</td><td>${e.japanese}</td><td>${e.math}</td><td>${e.total}</td></tr>`).join('')}
+function exportJSON(){let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='kiho_lab_backup_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}
+async function importJSON(){let file=$('importFile').files[0];if(!file){$('importStatus').textContent='JSON 檔案を選択してください';return}try{let obj=JSON.parse(await file.text());let exams=Array.isArray(obj)?obj:obj.exams;if(!Array.isArray(exams))throw Error('exams 配列が必要です');let valid=exams.every(e=>/^\d{4}-\d{2}$/.test(e.date)&&['Jump','Challenge'].includes(e.type)&&['japanese','math','total'].every(k=>typeof e[k]==='number'&&e[k]>=20&&e[k]<=90));if(!valid)throw Error('日期、測驗類型或偏差值格式不正確');let merged=new Map(data.exams.map(e=>[e.date+'|'+e.type,e]));exams.forEach(e=>merged.set(e.date+'|'+e.type,{date:e.date,type:e.type,japanese:e.japanese,math:e.math,total:e.total}));data.exams=[...merged.values()];if(!Array.isArray(obj)&&Array.isArray(obj.attempts))data.attempts=obj.attempts.filter(x=>typeof x.skill==='string'&&typeof x.correct==='boolean'&&typeof x.hint==='boolean');save();renderDashboard();$('importStatus').textContent='匯入成功：'+exams.length+' 筆成績';}catch(e){$('importStatus').textContent='匯入失敗：'+e.message}}
+function resetAttempts(){if(confirm('練習紀錄を すべて けしますか？')){data.attempts=[];save();renderDashboard()}}renderDashboard();if(labToken)$('tokenStatus').textContent='AI は接続済みです。';
+</script></body></html>
